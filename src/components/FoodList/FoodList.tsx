@@ -1,7 +1,13 @@
-import { createStyles, Button } from "@mantine/core";
+import {
+  createStyles,
+  Button,
+  useMantineColorScheme,
+  ActionIcon,
+  Box,
+} from "@mantine/core";
 import { useState, useMemo } from "react";
 import FoodCard from "./FoodCard";
-import { ArrowsUpDownIcon } from "@heroicons/react/20/solid";
+import { ArrowsUpDownIcon, SunIcon, MoonIcon } from "@heroicons/react/20/solid";
 import { FoodT } from "./types";
 import { foodListData } from "../../data/food-list/food-list-data";
 
@@ -50,11 +56,6 @@ const useStyles = createStyles((theme) => ({
     border: "none",
     outline: "none",
     cursor: "pointer",
-    backgroundColor: "#1c1c1c",
-
-    "&:hover": {
-      backgroundColor: "#292929",
-    },
   },
   "sort-button-icon": {
     width: "1.5rem",
@@ -67,6 +68,9 @@ const FoodList = () => {
   const [foodList] = useState<FoodT[]>(foodListData);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sort, setSort] = useState<string>("Ascending");
+
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const dark = colorScheme === "dark";
 
   const filteredFoodList = useMemo(() => {
     const sortedFoodList =
@@ -96,10 +100,32 @@ const FoodList = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </label>
-      <Button className={classes["sort-button"]} onClick={onSort}>
-        <ArrowsUpDownIcon className={classes["sort-button-icon"]} />
-        {sort}
-      </Button>
+
+      <Box
+        sx={() => ({
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "300px",
+        })}
+      >
+        <Button className={classes["sort-button"]} onClick={onSort}>
+          <ArrowsUpDownIcon className={classes["sort-button-icon"]} />
+          {sort}
+        </Button>
+        <ActionIcon
+          variant="outline"
+          color={dark ? "yellow" : "blue"}
+          onClick={() => toggleColorScheme()}
+          title="Toggle color scheme"
+        >
+          {dark ? (
+            <SunIcon style={{ width: "1rem" }} />
+          ) : (
+            <MoonIcon style={{ width: "1rem" }} />
+          )}
+        </ActionIcon>
+      </Box>
       <div className={classes["cards-container"]}>
         {filteredFoodList.map((food) => (
           <FoodCard key={food.dish} {...food} />
