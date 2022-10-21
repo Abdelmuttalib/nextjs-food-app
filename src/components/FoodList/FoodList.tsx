@@ -1,61 +1,39 @@
-import { createStyles } from "@mantine/core";
-import React from "react";
+import { createStyles, Button } from "@mantine/core";
+import { useState, useMemo } from "react";
 import FoodCard from "./FoodCard";
-
-const foodListData = [
-  {
-    dish: "Kebab",
-    description:
-      "a type of cooked meat dish that originates from cuisines of the Middle East",
-    image: "kebab.jpg",
-    rating: 4.6,
-  },
-  {
-    dish: "Shawarma",
-    description:
-      "a delightful sight of vertically mounted layered chicken or lamp meat",
-    image: "shawarma.jpg",
-    rating: 4.3,
-  },
-  {
-    dish: "Falafel",
-    description:
-      "Falafel is a Middle Eastern recipe that is basically mashed chickpeas with herbs and seasonings formed into patties and fried",
-    image: "falafel.jpg",
-    rating: 4.7,
-  },
-  {
-    dish: "Taboleh",
-    description:
-      "a Levantine salad made mostly of finely chopped parsley, with tomatoes, mint, onion, bulgur (soaked, not cooked), and seasoned with olive oil, lemon juice, salt and sweet pepper",
-    image: "taboleh.jpg",
-    rating: 4.2,
-  },
-  {
-    dish: "Kabsa",
-    description:
-      "an Arab mixed rice dish, served on a communal platter, that originates from Saudi Arabia",
-    image: "kabsa.jpg",
-    rating: 4.9,
-  },
-  {
-    dish: "Hummus",
-    description:
-      "a Middle Eastern dip, spread, or savory dish made from cooked, mashed chickpeas blended with tahini, lemon juice, and garlic.",
-    image: "hummus.jpg",
-    rating: 4.8,
-  },
-];
+import { ArrowsUpDownIcon } from "@heroicons/react/20/solid";
+import { FoodT } from "./types";
+import { foodListData } from "../../data/food-list/food-list-data";
 
 const useStyles = createStyles((theme) => ({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    margin: "4rem 0",
+  },
+
+  "search-input": {
+    width: 400,
+    padding: "14px 20px",
+    borderRadius: 5,
+    border: "none",
+    outline: "none",
+    fontSize: 18,
+    backgroundColor: "#f0f0f0",
+    color: "#1C1C1C",
+
+    "&:focus": {
+      outline: "none",
+    },
+  },
   "cards-container": {
     display: "grid",
     gridTemplateColumns: "1fr",
-    padding: "3rem 2rem",
-    margin: "4rem 0",
+    padding: "2rem 2rem",
+    margin: "2rem 0",
     gap: "2rem",
     borderRadius: "5px",
-    // backgroundColor: "#D9D9D9",
 
     [`@media (min-width: ${theme.breakpoints.sm}px)`]: {
       gridTemplateColumns: "1fr 1fr",
@@ -64,22 +42,69 @@ const useStyles = createStyles((theme) => ({
       gridTemplateColumns: "1fr 1fr 1fr",
     },
   },
+
+  "sort-button": {
+    fontSize: "1rem",
+    margin: "1rem 0",
+    borderRadius: "5px",
+    border: "none",
+    outline: "none",
+    cursor: "pointer",
+    backgroundColor: "#1c1c1c",
+
+    "&:hover": {
+      backgroundColor: "#292929",
+    },
+  },
+  "sort-button-icon": {
+    width: "1.5rem",
+    marginRight: "8px",
+  },
 }));
 
 const FoodList = () => {
   const { classes } = useStyles();
+  const [foodList] = useState<FoodT[]>(foodListData);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sort, setSort] = useState<string>("Ascending");
+
+  const filteredFoodList = useMemo(() => {
+    const sortedFoodList =
+      sort === "Ascending"
+        ? foodList.sort((a, b) => a.rating - b.rating)
+        : foodList.sort((a, b) => b.rating - a.rating);
+    return sortedFoodList.filter((food) =>
+      food.dish.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery, foodList, sort]);
+
+  const onSort = () => {
+    setSort((prevValue) =>
+      prevValue === "Ascending" ? "Descending" : "Ascending"
+    );
+  };
 
   return (
-    <section className={classes["cards-container"]}>
-      {foodListData.map(({ dish, description, image, rating }) => (
-        <FoodCard
-          key={dish}
-          dish={dish}
-          description={description}
-          image={image}
-          rating={rating}
+    <section className={classes.container}>
+      <label htmlFor="searchQuery">
+        <input
+          className={classes["search-input"]}
+          type="text"
+          id="searchQuery"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
-      ))}
+      </label>
+      <Button className={classes["sort-button"]} onClick={onSort}>
+        <ArrowsUpDownIcon className={classes["sort-button-icon"]} />
+        {sort}
+      </Button>
+      <div className={classes["cards-container"]}>
+        {filteredFoodList.map((food) => (
+          <FoodCard key={food.dish} {...food} />
+        ))}
+      </div>
     </section>
   );
 };
