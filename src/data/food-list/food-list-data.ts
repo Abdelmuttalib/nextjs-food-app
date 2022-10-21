@@ -39,7 +39,7 @@ export const foodListData: FoodT[] = [
   {
     dish: "Hummus",
     description:
-      "a Middle Eastern dip, spread, or savory dish made from cooked, mashed chickpeas blended with tahini, lemon juice, and garlic.",
+      "a Middle Eastern dip, spread, or savory dish made from cooked, mashed chickpeas blended with tahini, lemon juice, and garlic",
     image: "hummus.jpg",
     rating: 4.8,
   },
