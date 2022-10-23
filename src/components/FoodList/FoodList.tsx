@@ -5,11 +5,17 @@ import {
   ActionIcon,
   Box,
 } from "@mantine/core";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import FoodCard from "./FoodCard";
-import { ArrowsUpDownIcon, SunIcon, MoonIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowsUpDownIcon,
+  SunIcon,
+  MoonIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
 import { FoodT } from "./types";
 import { foodListData } from "../../data/food-list/food-list-data";
+import Image from "next/image";
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -61,6 +67,32 @@ const useStyles = createStyles((theme) => ({
     width: "1.5rem",
     marginRight: "8px",
   },
+
+  "clicked-image-container": {
+    position: "fixed",
+    top: 100,
+    left: 0,
+    right: 0,
+    width: "100%",
+    height: "80%",
+    padding: "10rem 0",
+    backgroundColor: "#f9f9f9",
+
+    "@keyframes fadeIntoScreen": {
+      "0%": {
+        // transform: "translateY(+40%)",
+        transform: "scale(0.5)",
+        opacity: 0,
+      },
+      "100%": {
+        // transform: "translateY(0)",
+        transform: "scale(1)",
+        opacity: 1,
+      },
+    },
+
+    animation: "fadeIntoScreen 0.5s ease-in-out",
+  },
 }));
 
 const FoodList = () => {
@@ -68,6 +100,7 @@ const FoodList = () => {
   const [foodList] = useState<FoodT[]>(foodListData);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sort, setSort] = useState<string>("Ascending");
+  const [clickedImage, setClickedImage] = useState<string>("");
 
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const dark = colorScheme === "dark";
@@ -87,6 +120,12 @@ const FoodList = () => {
       prevValue === "Ascending" ? "Descending" : "Ascending"
     );
   };
+
+  useEffect(() => {
+    if (clickedImage) {
+      document.body.style.overflow = "hidden";
+    }
+  }, [clickedImage]);
 
   return (
     <section className={classes.container}>
@@ -128,8 +167,65 @@ const FoodList = () => {
       </Box>
       <div className={classes["cards-container"]}>
         {filteredFoodList.map((food) => (
-          <FoodCard key={food.dish} {...food} />
+          <FoodCard
+            key={food.dish}
+            {...food}
+            setClickedImage={setClickedImage}
+          />
         ))}
+
+        {/* Clicked Image Full Screen Animation */}
+        {clickedImage && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: "100%",
+              height: "100%",
+              padding: "10rem 0",
+              backgroundColor: "#f9f9f9",
+            }}
+          >
+            <Box className={classes["clicked-image-container"]}>
+              <Image
+                layout="fill"
+                objectFit="contain"
+                src={clickedImage}
+                alt="Food dish image"
+              />
+            </Box>
+
+            <button
+              style={{
+                position: "fixed",
+                top: 50,
+                right: 100,
+                width: "2rem",
+                height: "2rem",
+                backgroundColor: "#f9f9f9",
+                border: "none",
+                outline: "none",
+                cursor: "pointer",
+                fontSize: "1.5rem",
+                color: "#1C1C1C",
+              }}
+            >
+              <XMarkIcon
+                style={{
+                  width: "3.5rem",
+                  padding: "0.5rem",
+                  backgroundColor: "#363636",
+                  borderRadius: "999999px",
+                  color: "#fff",
+                }}
+                onClick={() => setClickedImage("")}
+              />
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
