@@ -1,7 +1,7 @@
 import { Card, Image, Text, createStyles, Badge } from "@mantine/core";
 
 type Props = {
-  dish: string;
+  title: string;
   description: string;
   btnLabel?: string;
   image: string;
@@ -23,21 +23,16 @@ const useStyles = createStyles(() => ({
   },
 }));
 
-const FoodCard = ({ dish, description, image, rating }: Props) => {
+const FoodCard = ({ title, description, image, rating }: Props) => {
   const { classes } = useStyles();
   return (
     <Card className={classes.card} shadow="md" p="lg" radius="md">
       <Card.Section>
-        <Image
-          className={classes.image}
-          src={`/images/food/${image}`}
-          height={240}
-          alt={dish}
-        />
+        <Image className={classes.image} src={image} height={240} alt={title} />
       </Card.Section>
 
       <Text weight={500} mt="md" mb="xs" size="lg">
-        {dish}
+        {title}
       </Text>
 
       <Text size="sm" color="dimmed">

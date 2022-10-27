@@ -1,0 +1,46 @@
+{
+  "foods": [
+    {
+      "id": 1,
+      "title": "Kebab",
+      "description": "a type of cooked meat dish that originates from cuisines of the Middle East",
+      "image": "kebab.jpg",
+      "rating": 4.6
+    },
+    {
+      "id": 2,
+      "title": "Shawarma",
+      "description": "a delightful sight of vertically mounted layered chicken or lamp meat",
+      "image": "shawarma.jpg",
+      "rating": 4.3
+    },
+    {
+      "id": 3,
+      "title": "Falafel",
+      "description": "Falafel is a Middle Eastern recipe that is basically mashed chickpeas with herbs and seasonings formed into patties and fried",
+      "image": "falafel.jpg",
+      "rating": 4.7
+    },
+    {
+      "id": 4,
+      "title": "Taboleh",
+      "description": "a Levantine salad made mostly of finely chopped parsley, with tomatoes, mint, onion, bulgur (soaked, not cooked), and seasoned with olive oil, lemon juice, salt and sweet pepper",
+      "image": "taboleh.jpg",
+      "rating": 4.2
+    },
+    {
+      "id": 5,
+      "title": "Kabsa",
+      "description": "an Arab mixed rice dish, served on a communal platter, that originates from Saudi Arabia",
+      "image": "kabsa.jpg",
+      "rating": 4.9
+    },
+    {
+      "id": 6,
+      "title": "Hummus",
+      "description": "a Middle Eastern dip, spread, or savory dish made from cooked, mashed chickpeas blended with tahini, lemon juice, and garlic",
+      "image": "hummus.jpg",
+      "rating": 4.8
+    }
+  ]
+}

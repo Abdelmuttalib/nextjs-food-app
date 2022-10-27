@@ -1,10 +1,29 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
 import { Layout } from "../src/components/Layout";
-import { Title } from "@mantine/core";
 import { FoodList } from "../src/components/FoodList";
 
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import Account from "../src/components/Auth/Account";
+// import { createClient } from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
+// import SignInWithEmail from "../src/components/Auth/SignInWithEmail";
+
 const Home: NextPage = () => {
+  const session = useSession();
+  const supabase = useSupabaseClient();
+  const [foods, setFoods] = useState([]);
+
+  useEffect(() => {
+    const getFoodsData = async () => {
+      const { data: foods } = await supabase.from("foods").select("*");
+      setFoods(foods);
+    };
+
+    getFoodsData();
+  }, []);
+
   return (
     <Layout>
       <Head>
@@ -13,9 +32,57 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Title order={1}>Food App</Title>
+      {/* {!session ? (
+        <>
+          {!signInWithEmail && (
+            <>
+              <Auth
+                supabaseClient={supabase}
+                appearance={{ theme: ThemeSupa }}
+                theme="light"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setSignInWithEmail(true);
+                }}
+              >
+                sign in with email
+              </button>
+            </>
+          )}
 
-      <FoodList />
+          {signInWithEmail && (
+            <>
+              <SignInWithEmail supabase={supabase} />
+              <button
+                type="button"
+                onClick={() => {
+                  setSignInWithEmail(false);
+                }}
+              >
+                sign in with email and password
+              </button>
+            </>
+          )}
+        </>
+      ) : (
+        <Account session={session} />
+      )} */}
+
+      {!session ? (
+        <>
+          <Auth
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            theme="light"
+          />
+        </>
+      ) : (
+        <Account session={session} />
+      )}
+
+      <FoodList foods={foods} />
     </Layout>
   );
 };
