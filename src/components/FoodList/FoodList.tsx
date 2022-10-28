@@ -1,15 +1,10 @@
-import {
-  createStyles,
-  Button,
-  useMantineColorScheme,
-  ActionIcon,
-  Box,
-} from "@mantine/core";
+import { createStyles, Button, Box } from "@mantine/core";
 import { useState, useMemo } from "react";
 import FoodCard from "./FoodCard";
-import { ArrowsUpDownIcon, SunIcon, MoonIcon } from "@heroicons/react/20/solid";
+import { ArrowsUpDownIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { FoodT } from "./types";
-import { foodListData } from "../../data/food-list/food-list-data";
+import AddFoodFormModal from "./AddFoodFormModal";
+import { createClient } from "@supabase/supabase-js";
 
 const useStyles = createStyles((theme) => ({
   container: {
@@ -63,24 +58,29 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const FoodList = () => {
+const FoodList = ({ foods }: { foods: FoodT[] }) => {
   const { classes } = useStyles();
-  const [foodList] = useState<FoodT[]>(foodListData);
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const [opened, setOpened] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sort, setSort] = useState<string>("Ascending");
 
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const dark = colorScheme === "dark";
-
   const filteredFoodList = useMemo(() => {
+    if (!foods) return [];
     const sortedFoodList =
       sort === "Ascending"
-        ? foodList.sort((a, b) => a.rating - b.rating)
-        : foodList.sort((a, b) => b.rating - a.rating);
+        ? foods.sort((a, b) => a.rating - b.rating)
+        : foods.sort((a, b) => b.rating - a.rating);
     return sortedFoodList.filter((food) =>
-      food.dish.toLowerCase().includes(searchQuery.toLowerCase())
+      food.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [searchQuery, foodList, sort]);
+  }, [searchQuery, foods, sort, supabase.auth]);
 
   const onSort = () => {
     setSort((prevValue) =>
@@ -88,8 +88,20 @@ const FoodList = () => {
     );
   };
 
+  const onAddFood = async (newFoodData: FoodT) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { data, error } = await supabase.from("foods").insert(newFoodData);
+    setOpened(false);
+  };
+
   return (
     <section className={classes.container}>
+      <AddFoodFormModal
+        onAddFood={onAddFood}
+        opened={opened}
+        setOpened={setOpened}
+      />
+
       <label htmlFor="searchQuery">
         <input
           className={classes["search-input"]}
@@ -107,28 +119,22 @@ const FoodList = () => {
           alignItems: "center",
           justifyContent: "space-between",
           width: "300px",
+          gap: "2rem",
         })}
       >
         <Button className={classes["sort-button"]} onClick={onSort}>
           <ArrowsUpDownIcon className={classes["sort-button-icon"]} />
           {sort}
         </Button>
-        <ActionIcon
-          variant="outline"
-          color={dark ? "yellow" : "blue"}
-          onClick={() => toggleColorScheme()}
-          title="Toggle color scheme"
-        >
-          {dark ? (
-            <SunIcon style={{ width: "1rem" }} />
-          ) : (
-            <MoonIcon style={{ width: "1rem" }} />
-          )}
-        </ActionIcon>
+        <Button onClick={() => setOpened(true)}>
+          <PlusIcon style={{ width: "1rem" }} />
+          Add new food
+        </Button>
       </Box>
+      {/* {isLoading && <div style={{ marginTop: "5rem" }}>Loading...</div>} */}
       <div className={classes["cards-container"]}>
         {filteredFoodList.map((food) => (
-          <FoodCard key={food.dish} {...food} />
+          <FoodCard key={food.title} {...food} />
         ))}
       </div>
     </section>

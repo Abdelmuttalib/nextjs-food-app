@@ -1,5 +1,6 @@
 export type FoodT = {
-  dish: string;
+  id?: number;
+  title: string;
   description: string;
   image: string;
   rating: number;

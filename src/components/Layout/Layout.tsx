@@ -1,3 +1,5 @@
+import { Title, ActionIcon, useMantineColorScheme } from "@mantine/core";
+import { SunIcon, MoonIcon } from "@heroicons/react/20/solid";
 import styles from "./layout.module.css";
 
 type LayoutProps = {
@@ -5,7 +7,27 @@ type LayoutProps = {
 };
 
 const Header = () => {
-  return <header className={styles.header}></header>;
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const dark = colorScheme === "dark";
+  return (
+    <header className={styles.header}>
+      <Title order={1}>Food App</Title>
+      <div>
+        <ActionIcon
+          variant="outline"
+          color={dark ? "yellow" : "blue"}
+          onClick={() => toggleColorScheme()}
+          title="Toggle color scheme"
+        >
+          {dark ? (
+            <SunIcon style={{ width: "1rem" }} />
+          ) : (
+            <MoonIcon style={{ width: "1rem" }} />
+          )}
+        </ActionIcon>
+      </div>
+    </header>
+  );
 };
 
 const Footer = () => {
