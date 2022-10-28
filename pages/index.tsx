@@ -8,17 +8,18 @@ import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import Account from "../src/components/Auth/Account";
 // import { createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
+import { FoodT } from "../src/components/FoodList/types";
 // import SignInWithEmail from "../src/components/Auth/SignInWithEmail";
 
 const Home: NextPage = () => {
   const session = useSession();
   const supabase = useSupabaseClient();
-  const [foods, setFoods] = useState([]);
+  const [foods, setFoods] = useState<FoodT[]>([]);
 
   useEffect(() => {
     const getFoodsData = async () => {
       const { data: foods } = await supabase.from("foods").select("*");
-      setFoods(foods);
+      setFoods(foods as FoodT[]);
     };
 
     getFoodsData();
